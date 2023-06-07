@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,7 +82,7 @@
               </tr>
             </thead>
             <tbody>
-                
+
             </tbody>
         </table>
     </div>
@@ -87,3 +90,8 @@
 </html>
 
 
+<?php
+
+$valor = $_POST['valor'];
+var_dump($valor);
+?>
