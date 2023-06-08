@@ -1,4 +1,31 @@
+<?php
 
+$credenciales["http"]["method"] = "POST";
+$credenciales["http"]["header"] = "Content-type: application/json";
+
+  $data = [
+    "nombre"=> $_POST["nombre"],
+    "apellido"=> $_POST["apellido"],
+    "edad"=> $_POST["edad"],
+    "direccion"=> $_POST["direccion"],
+    "email"=> $_POST["email"],
+    "hora" => $_POST["hora"],
+    "team" => $_POST["team"],
+    "trainer" => $_POST["trainer"],
+    "cedula" => $_POST["cedula"]
+  ];
+  
+  $data = json_encode($data);
+  
+  $credenciales["http"]["content"] = $data;
+  $config = stream_context_create($credenciales);
+  $_DATA = file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion", false, $config);
+    print_r($_DATA);
+    
+
+
+
+?>
 
 
 <!DOCTYPE html>
@@ -12,10 +39,10 @@
 </head>
 <body>
     <div class="container">
-        <form>
+        <form method="POST">
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Nombres:">
+                  <input type="text" placeholder="Nombres:" name="nombre">
                 </div>
                 <div class="col-4">
                   <Label>Campus Lands</Label>
@@ -23,26 +50,26 @@
             </div>    
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Apellidos:">
+                  <input type="text" placeholder="Apellidos:" name="apellido">
                 </div>
                 <div class="col-4">
-                  <input type="number" placeholder="Edad:">
+                  <input type="number" placeholder="Edad:" name="edad">
                 </div>
             </div>    
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Direccion:">
+                  <input type="text" placeholder="Direccion:" name="direccion">
                 </div>
                 <div class="col-4">
-                  <input type="email" placeholder="Email:">
+                  <input type="email" placeholder="Email:" name="email">
                 </div>
             </div>
             <div class="row justify-content-center mt-5">
                 <div class="col-4">
-                  <input type="time" placeholder="Hora de Entrada:">
+                  <input type="time" placeholder="Hora de Entrada:" name="hora">
                 </div>
                 <div class="col-2">
-                  <input type="submit" value="✅">
+                  <input type="submit" value="✅" name="guardar">
                 </div>
                 <div class="col-2">
                   <input type="submit" value="❌">
@@ -50,7 +77,7 @@
             </div>
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Team:">
+                  <input type="text" placeholder="Team:" name="team">
                 </div>
                 <div class="col-2">
                   <input type="submit" value="✏️">
@@ -61,10 +88,10 @@
             </div>
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Trainer:">
+                  <input type="text" placeholder="Trainer:" name="trainer">
                 </div>
                 <div class="col-4">
-                  <input type="number" placeholder="Cedula:">
+                  <input type="number" placeholder="Cedula:" name="cedula">
                 </div>
             </div>               
         </form>
@@ -90,8 +117,3 @@
 </html>
 
 
-<?php
-
-$valor = $_POST['valor'];
-var_dump($valor);
-?>
