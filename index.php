@@ -1,31 +1,41 @@
 <?php
 
-$credenciales["http"]["method"] = "POST";
-$credenciales["http"]["header"] = "Content-type: application/json";
-
-  $data = [
-    "nombre"=> $_POST["nombre"],
-    "apellido"=> $_POST["apellido"],
-    "edad"=> $_POST["edad"],
-    "direccion"=> $_POST["direccion"],
-    "email"=> $_POST["email"],
-    "hora" => $_POST["hora"],
-    "team" => $_POST["team"],
-    "trainer" => $_POST["trainer"],
-    "cedula" => $_POST["cedula"]
-  ];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // Procesar los datos y enviar la solicitud
   
-  $data = json_encode($data);
-  
-  $credenciales["http"]["content"] = $data;
-  $config = stream_context_create($credenciales);
-  $_DATA = file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion", false, $config);
-    print_r($_DATA);
+   switch($_POST['accion']){
+    case '✅':
+      $credenciales["http"]["method"] = "POST";
+      $credenciales["http"]["header"] = "Content-type: application/json";
     
+      $data = [
+        "nombre"=> $_POST["nombre"],
+        "apellido"=> $_POST["apellido"],
+        "edad"=> $_POST["edad"],
+        "direccion"=> $_POST["direccion"],
+        "email"=> $_POST["email"],
+        "hora" => $_POST["hora"],
+        "team" => $_POST["team"],
+        "trainer" => $_POST["trainer"],
+        "cedula" => $_POST["cedula"],
+      ];
+    
+      $data = json_encode($data);
+      $credenciales["http"]["content"] = $data;
+      $config = stream_context_create($credenciales);
+      $response = file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion", false, $config);
+    
+      // Redireccionar al usuario mediante GET después del envío
+      header('Location: index.php');
+      exit();
+      break;  
+    }
 
-
+}
 
 ?>
+
+
 
 
 <!DOCTYPE html>
@@ -69,10 +79,10 @@ $credenciales["http"]["header"] = "Content-type: application/json";
                   <input type="time" placeholder="Hora de Entrada:" name="hora">
                 </div>
                 <div class="col-2">
-                  <input type="submit" value="✅" name="guardar">
+                  <input type="submit" value="✅" name="accion">
                 </div>
                 <div class="col-2">
-                  <input type="submit" value="❌">
+                  <input type="submit" value="❌" name="accion">
                 </div>
             </div>
             <div class="row justify-content-center mt-3">
@@ -80,10 +90,10 @@ $credenciales["http"]["header"] = "Content-type: application/json";
                   <input type="text" placeholder="Team:" name="team">
                 </div>
                 <div class="col-2">
-                  <input type="submit" value="✏️">
+                  <input type="submit" value="✏️" name="accion">
                 </div>
                 <div class="col-2">
-                  <input type="submit" value="🔎">
+                  <input type="submit" value="🔎"name="accion" >
                 </div>
             </div>
             <div class="row justify-content-center mt-3">
