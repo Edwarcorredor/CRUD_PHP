@@ -24,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $credenciales["http"]["content"] = $data;
       $config = stream_context_create($credenciales);
       $response = file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion", false, $config);
-    
       // Redireccionar al usuario mediante GET después del envío
       header('Location: index.php');
       exit();
@@ -118,9 +117,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <th scope="col">Trainer</th>
               </tr>
             </thead>
-            <tbody>
 
+            <tbody>
+              <?php
+                $credencialesGET["http"]["method"] = "GET";
+                $credencialesGET["http"]["header"] = "Content-type: application/json";
+                $configGET = stream_context_create($credencialesGET);
+                $responseGET = file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion", false, $configGET);
+                $responseGET = json_decode($responseGET);
+                $contadorGET = 0;
+                $tablaGET = "";
+                while ($contadorGET < count($responseGET)) {
+                  $tablaGET .= "<tr>
+                    <td>{$responseGET[$contadorGET]->nombre}</td>
+                    <td>{$responseGET[$contadorGET]->apellido}</td>
+                    <td>{$responseGET[$contadorGET]->edad}</td>
+                    <td>{$responseGET[$contadorGET]->direccion}</td>
+                    <td>{$responseGET[$contadorGET]->email}</td>
+                    <td>{$responseGET[$contadorGET]->hora}</td>
+                    <td>{$responseGET[$contadorGET]->team}</td>
+                    <td>{$responseGET[$contadorGET]->trainer}</td>
+                  </tr>";
+                  $contadorGET++;
+                }
+                echo $tablaGET;
+              ?>
             </tbody>
+
         </table>
     </div>
 </body>
