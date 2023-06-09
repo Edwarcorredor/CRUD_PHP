@@ -28,9 +28,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       header('Location: index.php');
       exit();
       break;  
-    }
 
-}
+      case '❌':
+        $id = null;
+        $cedula = $_POST['cedula'];
+        var_dump($responseGET);
+        foreach ($responseGET as $key => $value) {
+          if ($value->cedula == $cedula) {
+            $id = $value->id;
+            break;
+          }
+        }
+        $credenciales["http"]["method"] = "DELETE";
+        $credenciales["http"]["header"] = "Content-type: application/json";
+        $config = stream_context_create($credenciales);
+        $response = file_get_contents("https://6480e3fff061e6ec4d4a019d.mockapi.io/Informacion/$id", false, $config);
+        break;
+    }
+  }
+
+
 
 ?>
 
@@ -115,30 +132,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <th scope="col">Hora Entrada</th>
                 <th scope="col">Team</th>
                 <th scope="col">Trainer</th>
+                <th scope="col">Editar</th>
               </tr>
             </thead>
 
             <tbody>
               <?php
-                $credencialesGET["http"]["method"] = "GET";
-                $credencialesGET["http"]["header"] = "Content-type: application/json";
-                $configGET = stream_context_create($credencialesGET);
-                $responseGET = file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion", false, $configGET);
+                $responseGET = file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion");
                 $responseGET = json_decode($responseGET);
-                $contadorGET = 0;
                 $tablaGET = "";
-                while ($contadorGET < count($responseGET)) {
-                  $tablaGET .= "<tr>
-                    <td>{$responseGET[$contadorGET]->nombre}</td>
-                    <td>{$responseGET[$contadorGET]->apellido}</td>
-                    <td>{$responseGET[$contadorGET]->edad}</td>
-                    <td>{$responseGET[$contadorGET]->direccion}</td>
-                    <td>{$responseGET[$contadorGET]->email}</td>
-                    <td>{$responseGET[$contadorGET]->hora}</td>
-                    <td>{$responseGET[$contadorGET]->team}</td>
-                    <td>{$responseGET[$contadorGET]->trainer}</td>
-                  </tr>";
-                  $contadorGET++;
+                foreach($responseGET as $key){
+                  $tablaGET .= "<form>
+                  <tr><td>{$key->nombre}</td>
+                  <td>{$key->apellido}</td>
+                  <td>{$key->edad}</td>
+                  <td>{$key->direccion}</td>
+                  <td>{$key->email}</td>
+                  <td>{$key->hora}</td>
+                  <td>{$key->team}</td>
+                  <td>{$key->trainer}</td>
+                  <td><input type='submit' value='🔝'><input type='hidden' name='seleccionado' value=$key->cc></td></tr>
+                  </form>";
                 }
                 echo $tablaGET;
               ?>
