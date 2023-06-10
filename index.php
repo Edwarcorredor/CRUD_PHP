@@ -1,58 +1,55 @@
 <?php
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  // Procesar los datos y enviar la solicitud
-  
-   switch($_POST['accion']){
-    case '✅':
-      $credenciales["http"]["method"] = "POST";
-      $credenciales["http"]["header"] = "Content-type: application/json";
-    
-      $data = [
-        "nombre"=> $_POST["nombre"],
-        "apellido"=> $_POST["apellido"],
-        "edad"=> $_POST["edad"],
-        "direccion"=> $_POST["direccion"],
-        "email"=> $_POST["email"],
-        "hora" => $_POST["hora"],
-        "team" => $_POST["team"],
-        "trainer" => $_POST["trainer"],
-        "cedula" => $_POST["cedula"],
-      ];
-    
-      $data = json_encode($data);
-      $credenciales["http"]["content"] = $data;
-      $config = stream_context_create($credenciales);
-      $response = file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion", false, $config);
-      // Redireccionar al usuario mediante GET después del envío
-      header('Location: index.php');
-      exit();
-      break;  
+function enviarDatos(){
 
-      case '❌':
-        $id = null;
-        $cedula = $_POST['cedula'];
-        var_dump($responseGET);
-        foreach ($responseGET as $key => $value) {
-          if ($value->cedula == $cedula) {
-            $id = $value->id;
-            break;
-          }
-        }
-        $credenciales["http"]["method"] = "DELETE";
-        $credenciales["http"]["header"] = "Content-type: application/json";
-        $config = stream_context_create($credenciales);
-        $response = file_get_contents("https://6480e3fff061e6ec4d4a019d.mockapi.io/Informacion/$id", false, $config);
-        break;
+  $data = [
+    "nombre"=> $_POST["nombre"],
+    "apellido"=> $_POST["apellido"],
+    "edad"=> $_POST["edad"],
+    "direccion"=> $_POST["direccion"],
+    "email"=> $_POST["email"],
+    "hora" => $_POST["hora"],
+    "team" => $_POST["team"],
+    "trainer" => $_POST["trainer"],
+    "cedula" => $_POST["cedula"],
+  ];
+  $data = json_encode($data);
+  $credenciales["http"]["method"] = "POST";
+  $credenciales["http"]["header"] = "Content-type: application/json";
+  $credenciales["http"]["content"] = $data;
+  $config = stream_context_create($credenciales);
+  file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion", false, $config);
+};
+
+function eliminarDatos(){
+  $id = null;
+  $responseGET = file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion");
+  $responseGET = json_decode($responseGET);
+  foreach ($responseGET as $key => $value) {
+    if ($value->cedula == $_POST['cedula']) {
+      $id = $value->id;
+      break;
     }
   }
-
-
+  $credenciales["http"]["method"] = "DELETE";
+  $credenciales["http"]["header"] = "Content-type: application/json";
+  $config = stream_context_create($credenciales);
+  file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion/$id", false, $config);
+};
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  switch($_POST['accion']){
+    case '✅':
+      enviarDatos();
+      break;
+    case '❌':
+      eliminarDatos();
+      break;
+  }
+  header("Location: index.php");
+  exit();
+}
 
 ?>
-
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -142,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $responseGET = json_decode($responseGET);
                 $tablaGET = "";
                 foreach($responseGET as $key){
-                  $tablaGET .= "<form>
+                  $tablaGET .= "<form action='index.php' method='post'>
                   <tr><td>{$key->nombre}</td>
                   <td>{$key->apellido}</td>
                   <td>{$key->edad}</td>
@@ -151,10 +148,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   <td>{$key->hora}</td>
                   <td>{$key->team}</td>
                   <td>{$key->trainer}</td>
-                  <td><input type='submit' value='🔝'><input type='hidden' name='seleccionado' value=$key->cc></td></tr>
+                  <td><input type='submit' value='🔝'><input type='hidden' name='seleccionado' value=$key->id></td></tr>
                   </form>";
                 }
                 echo $tablaGET;
+                
               ?>
             </tbody>
 
