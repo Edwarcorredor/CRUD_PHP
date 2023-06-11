@@ -1,5 +1,19 @@
 <?php
 
+session_start();
+
+function colocarDatos($responseGET){
+  $index = intval($_POST['seleccionado']);
+  $_SESSION['nombre'] = $responseGET[$index]->nombre;
+  $_SESSION['apellido'] = $responseGET[$index]->apellido;
+  $_SESSION['edad'] = $responseGET[$index]->edad;
+  $_SESSION['direccion'] = $responseGET[$index]->direccion;
+  $_SESSION['email'] = $responseGET[$index]->email;
+  $_SESSION['hora'] = $responseGET[$index]->hora;
+  $_SESSION['team'] = $responseGET[$index]->team;
+  $_SESSION['trainer'] = $responseGET[$index]->trainer;
+  $_SESSION['cedula'] = $responseGET[$index]->cedula;
+}
 function enviarDatos(){
 
   $data = [
@@ -19,12 +33,10 @@ function enviarDatos(){
   $credenciales["http"]["content"] = $data;
   $config = stream_context_create($credenciales);
   file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion", false, $config);
-};
+}
 
-function eliminarDatos(){
+function eliminarDatos($responseGET){
   $id = null;
-  $responseGET = file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion");
-  $responseGET = json_decode($responseGET);
   foreach ($responseGET as $key => $value) {
     if ($value->cedula == $_POST['cedula']) {
       $id = $value->id;
@@ -35,20 +47,45 @@ function eliminarDatos(){
   $credenciales["http"]["header"] = "Content-type: application/json";
   $config = stream_context_create($credenciales);
   file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion/$id", false, $config);
-};
+}
+
+$responseGET = file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion");
+$responseGET = json_decode($responseGET);
+$tablaGET = "";
+foreach($responseGET as $key=>$value) {
+  $tablaGET .= "<tr>
+      <td>{$value->nombre}</td>
+      <td>{$value->apellido}</td>
+      <td>{$value->edad}</td>
+      <td>{$value->direccion}</td>
+      <td>{$value->email}</td>
+      <td>{$value->hora}</td>
+      <td>{$value->team}</td>
+      <td>{$value->trainer}</td>
+      <td>
+        <form action='index.php' method='POST'>
+          <input type='submit' name='accion' value='🔝'>
+          <input type='hidden' name='seleccionado' value={$key}>
+        </form>
+      </td>
+    </tr>";
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   switch($_POST['accion']){
     case '✅':
       enviarDatos();
       break;
     case '❌':
-      eliminarDatos();
+      eliminarDatos($responseGET);
+      break;
+    case '🔝':
+      colocarDatos($responseGET);
       break;
   }
   header("Location: index.php");
   exit();
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -65,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="POST">
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Nombres:" name="nombre">
+                  <input type="text" placeholder="Nombres:" name="nombre" value=<?php echo $_SESSION['nombre']; ?>>
                 </div>
                 <div class="col-4">
                   <Label>Campus Lands</Label>
@@ -73,23 +110,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>    
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Apellidos:" name="apellido">
+                  <input type="text" placeholder="Apellidos:" name="apellido" value=<?php echo $_SESSION['apellido']; ?>>
                 </div>
                 <div class="col-4">
-                  <input type="number" placeholder="Edad:" name="edad">
+                  <input type="number" placeholder="Edad:" name="edad" value=<?php echo $_SESSION['edad']; ?>>
                 </div>
             </div>    
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Direccion:" name="direccion">
+                  <input type="text" placeholder="Direccion:" name="direccion" value=<?php echo $_SESSION['direccion']; ?>>
                 </div>
                 <div class="col-4">
-                  <input type="email" placeholder="Email:" name="email">
+                  <input type="email" placeholder="Email:" name="email" value=<?php echo $_SESSION['email']; ?>>
                 </div>
             </div>
             <div class="row justify-content-center mt-5">
                 <div class="col-4">
-                  <input type="time" placeholder="Hora de Entrada:" name="hora">
+                  <input type="time" placeholder="Hora de Entrada:" name="hora" value=<?php echo $_SESSION['hora']; ?>>
                 </div>
                 <div class="col-2">
                   <input type="submit" value="✅" name="accion">
@@ -100,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Team:" name="team">
+                  <input type="text" placeholder="Team:" name="team" value=<?php echo $_SESSION['team']; ?>>
                 </div>
                 <div class="col-2">
                   <input type="submit" value="✏️" name="accion">
@@ -111,10 +148,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Trainer:" name="trainer">
+                  <input type="text" placeholder="Trainer:" name="trainer" value=<?php echo $_SESSION['trainer']; ?>>
                 </div>
                 <div class="col-4">
-                  <input type="number" placeholder="Cedula:" name="cedula">
+                  <input type="number" placeholder="Cedula:" name="cedula" value=<?php echo $_SESSION['cedula']; ?>>
                 </div>
             </div>               
         </form>
@@ -135,24 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <tbody>
               <?php
-                $responseGET = file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion");
-                $responseGET = json_decode($responseGET);
-                $tablaGET = "";
-                foreach($responseGET as $key){
-                  $tablaGET .= "<form action='index.php' method='post'>
-                  <tr><td>{$key->nombre}</td>
-                  <td>{$key->apellido}</td>
-                  <td>{$key->edad}</td>
-                  <td>{$key->direccion}</td>
-                  <td>{$key->email}</td>
-                  <td>{$key->hora}</td>
-                  <td>{$key->team}</td>
-                  <td>{$key->trainer}</td>
-                  <td><input type='submit' value='🔝'><input type='hidden' name='seleccionado' value=$key->id></td></tr>
-                  </form>";
-                }
                 echo $tablaGET;
-                
               ?>
             </tbody>
 
