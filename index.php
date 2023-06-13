@@ -3,7 +3,13 @@
 session_start();
 
 function colocarDatos($responseGET){
-  $index = intval($_POST['seleccionado']);
+  if (isset($_POST['seleccionado'])){
+    $index = intval($_POST['seleccionado']);
+  }
+  else{
+    $index = $_POST['index'];
+  }
+  
   $_SESSION['nombre'] = $responseGET[$index]->nombre;
   $_SESSION['apellido'] = $responseGET[$index]->apellido;
   $_SESSION['edad'] = $responseGET[$index]->edad;
@@ -36,6 +42,12 @@ function enviarDatos(){
   $_SESSION=[];
 }
 
+function buscarDatos($responseGET){
+  $id = null;
+  $_POST['index'] = array_search($_POST['cedula'], array_column($responseGET, 'cedula'));
+  colocarDatos($responseGET);
+}
+
 function eliminarDatos($responseGET){
   $id = null;
   foreach ($responseGET as $key => $value) {
@@ -48,6 +60,7 @@ function eliminarDatos($responseGET){
   $credenciales["http"]["header"] = "Content-type: application/json";
   $config = stream_context_create($credenciales);
   file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion/$id", false, $config);
+  $_SESSION = [];
 }
 
 $responseGET = file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion");
@@ -82,6 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       break;
     case '🔝':
       colocarDatos($responseGET);
+      break;
+    case '🔎':
+      buscarDatos($responseGET);
       break;
   }
   header("Location: index.php");
