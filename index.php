@@ -63,6 +63,33 @@ function eliminarDatos($responseGET){
   $_SESSION = [];
 }
 
+function editarDatos($responseGET){
+  $data = [
+    "nombre"=> $_POST["nombre"],
+    "apellido"=> $_POST["apellido"],
+    "edad"=> $_POST["edad"],
+    "direccion"=> $_POST["direccion"],
+    "email"=> $_POST["email"],
+    "hora" => $_POST["hora"],
+    "team" => $_POST["team"],
+    "trainer" => $_POST["trainer"],
+    "cedula" => $_POST["cedula"],
+  ];
+  foreach ($responseGET as $key => $value) {
+    if ($value->cedula == $_POST['cedula']) {
+      $id = $value->id;
+      break;
+    }
+  }
+  $data = json_encode($data);
+  $credenciales["http"]["method"] = "PUT";
+  $credenciales["http"]["header"] = "Content-type: application/json";
+  $credenciales["http"]["content"] = $data;
+  $config = stream_context_create($credenciales);
+  file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion/$id", false, $config);
+  $_SESSION=[];
+}
+
 $responseGET = file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion");
 $responseGET = json_decode($responseGET);
 $tablaGET = "";
@@ -98,6 +125,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       break;
     case '🔎':
       buscarDatos($responseGET);
+      break;
+    case '✏️':
+      editarDatos($responseGET);
       break;
   }
   header("Location: index.php");
