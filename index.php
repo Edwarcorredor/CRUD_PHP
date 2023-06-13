@@ -33,6 +33,7 @@ function enviarDatos(){
   $credenciales["http"]["content"] = $data;
   $config = stream_context_create($credenciales);
   file_get_contents("https://6480e399f061e6ec4d49ff8e.mockapi.io/informacion", false, $config);
+  $_SESSION=[];
 }
 
 function eliminarDatos($responseGET){
@@ -102,7 +103,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="POST">
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Nombres:" name="nombre" value=<?php echo $_SESSION['nombre']; ?>>
+                  <input type="text" placeholder="Nombres:" name="nombre" value=<?php
+                  if (isset($_SESSION['nombre'])) {
+                      echo $_SESSION['nombre'];
+                  }
+                  ?>>
                 </div>
                 <div class="col-4">
                   <Label>Campus Lands</Label>
@@ -110,23 +115,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>    
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Apellidos:" name="apellido" value=<?php echo $_SESSION['apellido']; ?>>
+                  <input type="text" placeholder="Apellidos:" name="apellido" value=<?php
+                  if (isset($_SESSION['apellido'])) {
+                      echo $_SESSION['apellido'];
+                  }
+                  ?>
+                  >
                 </div>
                 <div class="col-4">
-                  <input type="number" placeholder="Edad:" name="edad" value=<?php echo $_SESSION['edad']; ?>>
+                  <input type="number" placeholder="Edad:" name="edad" value=<?php
+                if (isset($_SESSION['edad'])) {
+                    echo $_SESSION['edad'];
+                }
+                ?>
+                >
                 </div>
             </div>    
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Direccion:" name="direccion" value=<?php echo $_SESSION['direccion']; ?>>
+                  <input type="text" placeholder="Direccion:" name="direccion" value=<?php
+                  if (isset($_SESSION['direccion'])) {
+                      echo $_SESSION['direccion'];
+                  }
+                  ?>
+                  >
                 </div>
                 <div class="col-4">
-                  <input type="email" placeholder="Email:" name="email" value=<?php echo $_SESSION['email']; ?>>
+                  <input type="email" placeholder="Email:" name="email" value=<?php
+                  if (isset($_SESSION['email'])) {
+                      echo $_SESSION['email'];
+                  }
+                  ?>
+                  >
                 </div>
             </div>
             <div class="row justify-content-center mt-5">
                 <div class="col-4">
-                  <input type="time" placeholder="Hora de Entrada:" name="hora" value=<?php echo $_SESSION['hora']; ?>>
+                  <input type="time" placeholder="Hora de Entrada:" name="hora" value=<?php
+                  if (isset($_SESSION['hora'])) {
+                      echo $_SESSION['hora'];
+                  }
+                  ?>
+                  >
                 </div>
                 <div class="col-2">
                   <input type="submit" value="✅" name="accion">
@@ -137,7 +167,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Team:" name="team" value=<?php echo $_SESSION['team']; ?>>
+                  <input type="text" placeholder="Team:" name="team" value=<?php
+                  if (isset($_SESSION['team'])) {
+                      echo $_SESSION['team'];
+                  }
+                  ?>
+                  >
                 </div>
                 <div class="col-2">
                   <input type="submit" value="✏️" name="accion">
@@ -148,10 +183,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="row justify-content-center mt-3">
                 <div class="col-4">
-                  <input type="text" placeholder="Trainer:" name="trainer" value=<?php echo $_SESSION['trainer']; ?>>
+                  <input type="text" placeholder="Trainer:" name="trainer" value=<?php
+                  if (isset($_SESSION['trainer'])) {
+                      echo $_SESSION['trainer'];
+                  }
+                  ?>
+                  >
                 </div>
                 <div class="col-4">
-                  <input type="number" placeholder="Cedula:" name="cedula" value=<?php echo $_SESSION['cedula']; ?>>
+                  <input type="number" placeholder="Cedula:" name="cedula" value=<?php
+                  if (isset($_SESSION['cedula'])) {
+                      echo $_SESSION['cedula'];
+                  }
+                  ?>
+                  >
                 </div>
             </div>               
         </form>
